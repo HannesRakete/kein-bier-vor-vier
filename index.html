@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kein Bier vor Vier</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
+          type="text/javascript"></script>
+  <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.26/moment-timezone-with-data-10-year-range.min.js"
+      type="text/javascript"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+  <style>
+    html {
+      background-color: #292929;
+    }
+  </style>
+</head>
+
+<body>
+
+<section class="hero is-bold is-dark is-fullheight">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h3 class="subtitle spaced">Kein Bier vor Vier</h3>
+      <h2 class="title is-2 spaced">Ein <strong style="font-size:40px">&#x1F37B;</strong> auf</h2>
+      <h1 id="selectedCity" class="title is-1 spaced">Hamburg</h1>
+      <div id="debugCities"></div>
+    </div>
+  </div>
+  <div class="hero-foot">
+    <div class="container has-text-centered is-fullwidth">
+      <details>
+        <summary>More Cities</summary>
+        <div id="container">
+          <div id="timezones"></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+
+<script type="text/javascript">
+  (function () {
+    class City {
+      constructor(name, zone) {
+        this.name = name;
+        this.zone = zone;
+      }
+    }
+
+    const skipZones = [
+      "Australia/ACT",
+      "Australia/LHI",
+      "CET",
+      "CST6CDT",
+      "EET",
+      "EST",
+      "EST5EDT",
+      "GB",
+      "GB-Eire",
+      "HST",
+      "MET",
+      "MST",
+      "MST7MDT",
+      "NZ",
+      "NZ-CHAT",
+      "PRC",
+      "PST8PDT",
+      "ROC",
+      "ROK",
+      "UCT",
+      "UTC",
+      "Universal",
+      "W-SU",
+      "WET",
+      "Zulu",
+    ];
+
+    let cities = moment.tz.names()
+        .filter(name => !(name.startsWith("Etc") || name.startsWith("GMT") || skipZones.includes(name)))
+        .map(name => new City(name, moment().tz(name)))
+        .filter(city => city.zone.hour() === 16)
+        .map(city => city.name
+        .replace("_", " ")
+        .split("/")
+        .reverse()
+        .join(" in ") + ", " + city.zone.format("HH:mm"))
+    ;
+
+    let randomCity = cities[Math.floor(Math.random() * cities.length)];
+    let selectedCityElement = document.getElementById('selectedCity');
+    selectedCityElement.innerHTML = randomCity;
+
+    let otherCities = cities.map(city => "<p>" + city + "</p>").join("");
+    let eTimezones = document.getElementById('timezones');
+    eTimezones.innerHTML = otherCities;
+
+  })();
+</script>
+</body>
+</html>
